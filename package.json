@@ -1,7 +1,7 @@
 {
   "name": "ci-monitor",
-  "displayName": "ci monitor",
-  "description": "des",
+  "displayName": "CI Monitor",
+  "description": "CI Monitor for vs code",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.73.0"
@@ -10,16 +10,63 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:ci-monitor.helloWorld"
+    "*"
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "ci-monitor.helloWorld",
-        "title": "Hello World"
+    "configuration": {
+      "type": "object",
+      "title": "CI Monitor",
+      "properties": {
+        "cimonitor.providers": {
+          "type": "array",
+          "title": "providers",
+          "items": {
+            "type": "object",
+            "title": "provider config",
+            "properties": {
+              "id": {
+                "type": "number",
+                "description": ""
+              },
+              "name": {
+                "type": "string",
+                "description": ""
+              },
+              "login": {
+                "type": "string",
+                "description": ""
+              },
+              "password": {
+                "type": "string",
+                "description": ""
+              },
+              "serviceUrl": {
+                "type": "string",
+                "description": ""
+              },
+              "type": {
+                "type": "number",
+                "description": ""
+              }
+            }
+          }
+        },
+        "cimonitor.jobs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "provider config",
+            "properties": {
+              "providerId": {
+                "type": "number",
+                "description": ""
+              }
+            }
+          }
+        }
       }
-    ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
