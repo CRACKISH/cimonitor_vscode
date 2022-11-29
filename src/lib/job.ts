@@ -16,6 +16,8 @@ export enum JobStatusEnum {
 
 export interface JobStatus {
     status: JobStatusEnum;
+    projectUrl: string;
+    projectName: string;
 }
 
 export class JobsCreator {
