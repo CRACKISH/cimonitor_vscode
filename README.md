@@ -1,6 +1,6 @@
-# ci-monitor README
+# CI Monitor README
 
-This is the README for your extension "ci-monitor". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "CI Monitor". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 
