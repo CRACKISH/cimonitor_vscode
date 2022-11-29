@@ -1,19 +1,14 @@
-import { StatusBarAlignment, StatusBarItem, window, workspace } from "vscode";
+import {  workspace } from "vscode";
 import { CONFIG_PRIMARY_KEY } from "./config";
-import { Job, JobsCreator, JobStatusResponse } from "./job";
+import { Job, JobsCreator, JobStatus, JobStatusEnum } from "./job";
 import { Provider, ProvidersCreator } from "./provider";
+import { StatusBar } from "./status-bar";
 
 export class Monitor {
-    private _statusBarItem!: StatusBarItem;
+    private _statusBar = new StatusBar();
     private _watching = false;
     private _startTimeOut = 1000;
-    private _defaultUpdatePeriodTime = 10000;
-
-    private _initializeStatusBarItem(): void {
-        this._statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left);
-        this._statusBarItem.text = 'initialize';
-        this._statusBarItem.show();
-    }
+    private _defaultUpdatePeriodTime = 15000;
 
     private _startWatch(): void {
         this._watching = true;
@@ -28,10 +23,10 @@ export class Monitor {
         if (!this._watching) {
             return;
         }
-        this._statusBarItem.text = 'checking jobs statuses';
+        this._statusBar.setText('CI Monitor checking');
         const { providers, jobs } = this.getProvidersAndJobs();
         const jobsStatuses = await this.getJobsStatuses(providers, jobs);
-        this.actualizeStatusBarItem(jobsStatuses);       
+        this._statusBar.actualizeStatusByJobsStatuses(jobsStatuses);  
         setTimeout(() => this._watch(), this._defaultUpdatePeriodTime);
     }
 
@@ -42,8 +37,8 @@ export class Monitor {
         return { providers, jobs };
     }
 
-    private async getJobsStatuses(providers: Provider[], jobs: Job[]): Promise<JobStatusResponse[]> {
-        const jobsStatuses: JobStatusResponse[] = [];
+    private async getJobsStatuses(providers: Provider[], jobs: Job[]): Promise<JobStatus[]> {
+        const jobsStatuses: JobStatus[] = [];
         await Promise.all(providers.map(async (provider) => {
             const providerJobs = jobs.filter(job => job.providerId = provider.id);
             await Promise.all(providerJobs.map(async (providerJob) => {
@@ -54,17 +49,12 @@ export class Monitor {
         return jobsStatuses;
     }
 
-    private actualizeStatusBarItem(jobsStatuses: JobStatusResponse[]): void {
-        this._statusBarItem.text = 'all good ' + jobsStatuses.length;
-    }
-
     constructor() {
-        this._initializeStatusBarItem();
         setTimeout(() => this._startWatch(), this._startTimeOut);
     }
 
     public dispose(): void {
         this._stopWatch();
-        this._statusBarItem.dispose();
+        this._statusBar.dispose();
     }
 }
