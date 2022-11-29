@@ -8,14 +8,14 @@ export interface Job {
     providerId: number;
 }
 
-export enum JobStatus {
+export enum JobStatusEnum {
     notInitialized,
     success,
     failure
 }
 
-export interface JobStatusResponse {
-    status: JobStatus;
+export interface JobStatus {
+    status: JobStatusEnum;
 }
 
 export class JobsCreator {

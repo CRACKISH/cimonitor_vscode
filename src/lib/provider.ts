@@ -1,13 +1,14 @@
+import fetch, { HeadersInit } from 'node-fetch';
 import { WorkspaceConfiguration } from "vscode";
 import { ProviderConfig, ProviderType } from "./config";
-import { Job, JobStatus, JobStatusResponse } from "./job";
+import { Job, JobStatusEnum, JobStatus } from "./job";
 
 export interface Provider {
     id: number;
     name?: string;
     type: ProviderType;
 
-    getJobStatus(job: Job): Promise<JobStatusResponse>
+    getJobStatus(job: Job): Promise<JobStatus>
 }
 
 abstract class BaseProvider implements Provider {
@@ -27,15 +28,67 @@ abstract class BaseProvider implements Provider {
         this.type = config.type;
     }
 
-    public async getJobStatus(job: Job): Promise<JobStatusResponse> {
-        return Promise.resolve({
-            status: JobStatus.success
-        });
-    }
+    public abstract getJobStatus(job: Job): Promise<JobStatus>;
+}
+
+enum JenkinsJobResult {
+    success = 'SUCCESS',
+    failure = 'FAILURE',
+    aborted = 'ABORTED'
+}
+  
+interface JenkinsJobAction {
+    building: boolean;
+    result: JenkinsJobResult;
 }
 
 export class JenkinsProvider extends BaseProvider {
+    private readonly _defaultRequestTimeout = 5000;
 
+    private _getRequestHeaders(): HeadersInit {
+        const buffer = Buffer.from(`${this.login}:${this.password}`);
+        return {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'Content-Type': 'application/json',
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            Authorization: 'Basic ' + buffer.toString('base64')
+        };
+    }
+
+    private _processJenkinsJob(jenkinsJob: JenkinsJobAction): JobStatus {
+        const ciJob = this._createDefaultJobStatusResponse();
+        if (jenkinsJob) {
+            switch (jenkinsJob.result) {
+                case JenkinsJobResult.success:
+                ciJob.status = JobStatusEnum.success;
+                break;
+                case JenkinsJobResult.failure:
+                ciJob.status = JobStatusEnum.failure;
+                break;
+            }
+        }
+        return ciJob;
+    }
+
+    private _createDefaultJobStatusResponse(): JobStatus {
+        return {
+            status: JobStatusEnum.notInitialized
+        };
+    }
+    
+    public async getJobStatus(job: Job): Promise<JobStatus> {
+        const endPoint = `${this.serviceUrl}/job/${job.key}/job/master/lastBuild/api/json`;
+        const response = await fetch(endPoint, {
+            method: 'GET',
+            headers: this._getRequestHeaders(),
+            timeout: this._defaultRequestTimeout
+        });
+        if (!response.ok) {
+            return this._createDefaultJobStatusResponse();
+        }
+        const jobAction = (await response.json()) as JenkinsJobAction;
+        return this._processJenkinsJob(jobAction);
+    }
 }
 
 export class ProviderFactory {
