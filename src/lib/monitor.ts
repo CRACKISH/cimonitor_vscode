@@ -1,26 +1,23 @@
-import { StatusBarAlignment, StatusBarItem, window, workspace, WorkspaceConfiguration } from "vscode";
-import { Job, JobsCreator, JobStatus } from "./job";
+import { StatusBarAlignment, StatusBarItem, window, workspace } from "vscode";
+import { CONFIG_PRIMARY_KEY } from "./config";
+import { Job, JobsCreator, JobStatusResponse } from "./job";
 import { Provider, ProvidersCreator } from "./provider";
 
 export class Monitor {
     private _statusBarItem!: StatusBarItem;
-    private _config!: WorkspaceConfiguration;
     private _watching = false;
+    private _startTimeOut = 1000;
     private _defaultUpdatePeriodTime = 10000;
 
     private _initializeStatusBarItem(): void {
         this._statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left);
         this._statusBarItem.text = 'initialize';
-    }
-
-    private _initializeConfig(): void {
-        this._config = workspace.getConfiguration('cimonitor');
+        this._statusBarItem.show();
     }
 
     private _startWatch(): void {
         this._watching = true;
         this._watch();
-        this._statusBarItem.show();
     }
 
     private _stopWatch(): void {
@@ -32,33 +29,38 @@ export class Monitor {
             return;
         }
         this._statusBarItem.text = 'checking jobs statuses';
-        const providers = ProvidersCreator.create(this._config);
-        const jobs = JobsCreator.create(this._config);
+        const { providers, jobs } = this.getProvidersAndJobs();
         const jobsStatuses = await this.getJobsStatuses(providers, jobs);
         this.actualizeStatusBarItem(jobsStatuses);       
         setTimeout(() => this._watch(), this._defaultUpdatePeriodTime);
     }
 
-    private async getJobsStatuses(providers: Provider[], jobs: Job[]): Promise<JobStatus[]> {
-        const jobsStatuses: JobStatus[] = [];
-        providers.forEach(provider => {
+    private getProvidersAndJobs(): { providers: Provider[], jobs: Job[] } {
+        const config = workspace.getConfiguration(CONFIG_PRIMARY_KEY);
+        const providers = ProvidersCreator.create(config);
+        const jobs = JobsCreator.create(config);
+        return { providers, jobs };
+    }
+
+    private async getJobsStatuses(providers: Provider[], jobs: Job[]): Promise<JobStatusResponse[]> {
+        const jobsStatuses: JobStatusResponse[] = [];
+        await Promise.all(providers.map(async (provider) => {
             const providerJobs = jobs.filter(job => job.providerId = provider.id);
-            providerJobs.forEach(async (providerJob) => {
+            await Promise.all(providerJobs.map(async (providerJob) => {
                 const jobStatus = await provider.getJobStatus(providerJob);
                 jobsStatuses.push(jobStatus);
-            });
-        });
+            }));
+        }));
         return jobsStatuses;
     }
 
-    private actualizeStatusBarItem(jobsStatuses: JobStatus[]): void {
-        this._statusBarItem.text = 'all good';
+    private actualizeStatusBarItem(jobsStatuses: JobStatusResponse[]): void {
+        this._statusBarItem.text = 'all good ' + jobsStatuses.length;
     }
 
     constructor() {
-        this._initializeConfig();
         this._initializeStatusBarItem();
-        this._startWatch();
+        setTimeout(() => this._startWatch(), this._startTimeOut);
     }
 
     public dispose(): void {

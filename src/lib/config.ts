@@ -1,9 +1,11 @@
+export const CONFIG_PRIMARY_KEY = 'cimonitor';
+
 export enum ProviderType {
     jenkins = 0
 }
 
 export interface ProviderConfig {
-    id: string;
+    id: number;
     name: string;
     login: string;
     password: string;
@@ -12,7 +14,10 @@ export interface ProviderConfig {
 }
 
 export interface JobConfig {
-    providerId: string;
+    id: number;
+    key: string;
+    name?: string;
+    providerId: number;
 }
 
 export interface Config {

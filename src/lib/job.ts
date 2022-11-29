@@ -2,11 +2,20 @@ import { WorkspaceConfiguration } from "vscode";
 import { JobConfig } from "./config";
 
 export interface Job {
-    providerId: string;
+    id: number;
+    key: string;
+    name?: string;
+    providerId: number;
 }
 
-export class JobStatus {
+export enum JobStatus {
+    notInitialized,
+    success,
+    failure
+}
 
+export interface JobStatusResponse {
+    status: JobStatus;
 }
 
 export class JobsCreator {
@@ -15,6 +24,9 @@ export class JobsCreator {
         const jobsConfig = config.get<JobConfig[]>('jobs') || [];
         jobsConfig.forEach(jobConfig => {
             jobs.push({
+                id: jobConfig.id,
+                key: jobConfig.key,
+                name: jobConfig.name,
                 providerId: jobConfig.providerId
             });
         });

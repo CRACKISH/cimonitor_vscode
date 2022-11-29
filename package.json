@@ -1,7 +1,7 @@
 {
   "name": "ci-monitor",
   "displayName": "CI Monitor",
-  "description": "CI Monitor for vs code",
+  "description": "CI Monitor for VS Code",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.73.0"
@@ -58,6 +58,18 @@
             "type": "object",
             "title": "provider config",
             "properties": {
+              "id": {
+                "type": "number",
+                "description": ""
+              },
+              "key": {
+                "type": "string",
+                "description": ""
+              },
+              "name": {
+                "type": "string",
+                "description": ""
+              },
               "providerId": {
                 "type": "number",
                 "description": ""

@@ -1,20 +1,20 @@
 import { WorkspaceConfiguration } from "vscode";
 import { ProviderConfig, ProviderType } from "./config";
-import { Job, JobStatus } from "./job";
+import { Job, JobStatus, JobStatusResponse } from "./job";
 
 export interface Provider {
-    id: string;
+    id: number;
     name?: string;
     type: ProviderType;
 
-    getJobStatus(job: Job): Promise<JobStatus>
+    getJobStatus(job: Job): Promise<JobStatusResponse>
 }
 
 abstract class BaseProvider implements Provider {
     protected login: string;
     protected password: string;
     protected serviceUrl: string;
-    public id: string;
+    public id: number;
     public name?: string;
     public type: ProviderType;
 
@@ -27,8 +27,10 @@ abstract class BaseProvider implements Provider {
         this.type = config.type;
     }
 
-    public async getJobStatus(job: Job): Promise<JobStatus> {
-        return Promise.resolve(new JobStatus());
+    public async getJobStatus(job: Job): Promise<JobStatusResponse> {
+        return Promise.resolve({
+            status: JobStatus.success
+        });
     }
 }
 
