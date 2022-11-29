@@ -6,21 +6,21 @@ class StatusBarTooltipCreator {
     private _createItem(jobsStatus: JobStatus): string {
         const projectUrl = jobsStatus.projectUrl;
         const projectName = jobsStatus.projectName;
-        const color = this._getItemColorAttributeValue(jobsStatus);
-        return `<div style="background-color: ${color};"><a href="${projectUrl}">${projectName}</a></div>`;
+        const icon = this._getItemIcon(jobsStatus);
+        return `<div>$(${icon}) <a href="${projectUrl}">${projectName}</a></div>`;
     }
 
-    private _getItemColorAttributeValue(jobsStatus: JobStatus): string {
-        let color = 'inherited';
+    private _getItemIcon(jobsStatus: JobStatus): string {
+        let color = '';
         switch (jobsStatus.status) {
             case JobStatusEnum.failure:
-                color = 'red';
+                color = 'notebook-state-error';
                 break;
             case JobStatusEnum.notInitialized:
-                color = 'gray';
+                color = 'notebook-stop';
                 break;
             case JobStatusEnum.success:
-                color = 'green';
+                color = 'notebook-state-success';
                 break;
         }
         return color;
@@ -28,8 +28,8 @@ class StatusBarTooltipCreator {
 
     public create(jobsStatuses: JobStatus[]): MarkdownString {
         const tooltip = new MarkdownString();
-        tooltip.isTrusted = true;
         tooltip.supportHtml = true;
+        tooltip.supportThemeIcons = true;
         jobsStatuses.forEach(jobsStatus => tooltip.appendMarkdown(this._createItem(jobsStatus)));
         return tooltip;
     }
