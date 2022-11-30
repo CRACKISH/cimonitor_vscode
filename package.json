@@ -3,12 +3,14 @@
   "displayName": "CI Monitor",
   "description": "CI Monitor for VS Code",
   "version": "0.0.1",
+  "publisher": "Andrii Vanikhin",
   "engines": {
     "vscode": "^1.73.0"
   },
   "categories": [
     "Other"
   ],
+  "icon": "images/icon.png",
   "activationEvents": [
     "*"
   ],
@@ -79,6 +81,9 @@
         }
       }
     }
+  },
+  "repository": {
+    "url": "https://github.com/CRACKISH/cimonitor_vscode.git"
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
