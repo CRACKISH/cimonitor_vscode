@@ -3,7 +3,7 @@
   "displayName": "CI Monitor",
   "description": "CI Monitor for VS Code",
   "version": "0.0.1",
-  "publisher": "Andrii Vanikhin",
+  "publisher": "AndriiVanikhin",
   "engines": {
     "vscode": "^1.73.0"
   },
