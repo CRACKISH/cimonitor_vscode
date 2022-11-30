@@ -2,7 +2,7 @@
   "name": "ci-monitor",
   "displayName": "CI Monitor",
   "description": "CI Monitor for VS Code",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "AndriiVanikhin",
   "engines": {
     "vscode": "^1.73.0"
