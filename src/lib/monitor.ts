@@ -23,6 +23,7 @@ export class Monitor {
         if (!this._watching) {
             return;
         }
+        this._statusBar.reset();
         this._statusBar.setText('CI Monitor checking');
         const { providers, jobs } = this.getProvidersAndJobs();
         const jobsStatuses = await this.getJobsStatuses(providers, jobs);

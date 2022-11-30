@@ -1,4 +1,4 @@
-import { MarkdownString, StatusBarAlignment, StatusBarItem, window } from "vscode";
+import { MarkdownString, StatusBarAlignment, StatusBarItem, ThemeColor, window } from "vscode";
 import { JobStatus, JobStatusEnum } from "./job";
 
 class StatusBarTooltipCreator {
@@ -45,6 +45,10 @@ export class StatusBar {
         this._statusBarItem.show();
     }
 
+    private _getSuccessJobSStatuses(jobsStatuses: JobStatus[]): JobStatus[] {
+        return jobsStatuses.filter(jobsStatus => jobsStatus.status === JobStatusEnum.success);
+    }
+
     private _prepareToolTip(jobsStatuses: JobStatus[]): MarkdownString {
         const sortedJobsStatuses = this._getSortedJobsStatusesByStatus(jobsStatuses);
         return this._tooltipCreator.create(sortedJobsStatuses);
@@ -58,6 +62,15 @@ export class StatusBar {
         });
     }
 
+    private _getBackgroundColor(jobsStatuses: JobStatus[]): ThemeColor | undefined {
+        let color;
+        const successJobSStatuses = this._getSuccessJobSStatuses(jobsStatuses);
+        if (successJobSStatuses.length < jobsStatuses.length) {
+            color = new ThemeColor('statusBarItem.warningBackground');
+        }
+        return color;
+    }
+
     constructor() {
         this._initializeStatusBarItem();
     }
@@ -66,10 +79,16 @@ export class StatusBar {
         this._statusBarItem.text = text;
     }
 
+    public reset(): void {
+        this._statusBarItem.tooltip = undefined;
+        this._statusBarItem.backgroundColor = undefined;
+    }
+
     public actualizeStatusByJobsStatuses(jobsStatuses: JobStatus[]): void {
-        const successJobs = jobsStatuses.filter(jobsStatus => jobsStatus.status === JobStatusEnum.success);
-        this.setText(`${successJobs.length} successful of ${jobsStatuses.length}`);
+        const successJobSStatuses = this._getSuccessJobSStatuses(jobsStatuses);
+        this.setText(`${successJobSStatuses.length} successful of ${jobsStatuses.length}`);
         this._statusBarItem.tooltip = this._prepareToolTip(jobsStatuses);
+        this._statusBarItem.backgroundColor = this._getBackgroundColor(jobsStatuses);
     }
 
     public dispose(): void {
