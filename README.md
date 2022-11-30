@@ -35,7 +35,7 @@ Show status for your CI plans.
     "cimonitor.providers": [
         {
             "id": 1,
-            "name": "Test Jenkins",
+            "name": "Jenkins",
             "login": "Your login",
             "password": "Your password",
             "serviceUrl": "https://your-jenkins.com/",
