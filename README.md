@@ -23,6 +23,7 @@ Now supported Jenkins, TeamCity.
 - `serviceUrl`: Url for ci service api.
 - `type`: Type of provider.
     0 - Jenkins
+    1 - TeamCity
 
 ### Jobs
 - `id`: Id of job.
