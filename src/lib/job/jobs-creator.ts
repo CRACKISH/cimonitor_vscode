@@ -1,7 +1,7 @@
-import { WorkspaceConfiguration } from "vscode";
+import { WorkspaceConfiguration } from 'vscode';
 
-import { JobConfig } from "../config";
-import { Job } from "./job";
+import { JobConfig } from '../config';
+import { Job } from './job';
 
 export class JobsCreator {
     public static create(config: WorkspaceConfiguration): Job[] {

@@ -1,8 +1,8 @@
-import { WorkspaceConfiguration } from "vscode";
+import { WorkspaceConfiguration } from 'vscode';
 
-import { ProviderConfig } from "../config";
-import { Provider } from "./provider";
-import { ProviderFactory } from "./provider-factory";
+import { ProviderConfig } from '../config';
+import { Provider } from './provider';
+import { ProviderFactory } from './provider-factory';
 
 export class ProvidersCreator {
     public static create(config: WorkspaceConfiguration): Provider[] {

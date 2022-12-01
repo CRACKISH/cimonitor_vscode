@@ -1,9 +1,9 @@
-import {  workspace } from "vscode";
+import {  workspace } from 'vscode';
 
-import { CONFIG_PRIMARY_KEY } from "./config";
-import { Job, JobsCreator, JobStatus } from "./job";
-import { Provider, ProvidersCreator } from "./provider";
-import { StatusBar } from "./status-bar";
+import { CONFIG_PRIMARY_KEY } from './config';
+import { Job, JobsCreator, JobStatus } from './job';
+import { Provider, ProvidersCreator } from './provider';
+import { StatusBar } from './status-bar';
 
 export class Monitor {
     private _statusBar = new StatusBar();

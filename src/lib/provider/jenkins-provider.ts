@@ -1,7 +1,7 @@
-import fetch, { HeadersInit } from "node-fetch";
+import fetch, { HeadersInit } from 'node-fetch';
 
-import { Job, JobStatus, JobStatusEnum } from "../job";
-import { BaseProvider } from "./provider";
+import { Job, JobStatus, JobStatusEnum } from '../job';
+import { BaseProvider } from './provider';
 
 enum JenkinsJobResult {
     success = 'SUCCESS',

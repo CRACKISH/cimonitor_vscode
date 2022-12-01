@@ -1,6 +1,6 @@
-import { MarkdownString } from "vscode";
+import { MarkdownString } from 'vscode';
 
-import { JobStatus, JobStatusEnum } from "../job";
+import { JobStatus, JobStatusEnum } from '../job';
 
 export class StatusBarTooltipCreator {
 

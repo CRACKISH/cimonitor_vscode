@@ -1,5 +1,5 @@
-import { ProviderConfig, ProviderType } from "../config/config";
-import { Job, JobStatus } from "../job/job";
+import { ProviderConfig, ProviderType } from '../config';
+import { Job, JobStatus } from '../job';
 
 export interface Provider {
     id: number;

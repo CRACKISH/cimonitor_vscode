@@ -14,7 +14,13 @@
         "curly": "warn",
         "eqeqeq": "warn",
         "no-throw-literal": "warn",
-        "semi": "off"
+        "semi": "off",
+        "quotes": ["warn", "single"],
+        "sort-imports": ["warn", {
+            "ignoreCase": true,
+            "ignoreDeclarationSort": true,
+            "allowSeparatedGroups": true
+        }]
     },
     "ignorePatterns": [
         "out",

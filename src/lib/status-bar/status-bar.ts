@@ -1,7 +1,7 @@
-import { MarkdownString, StatusBarAlignment, StatusBarItem, ThemeColor, window } from "vscode";
+import { MarkdownString, StatusBarAlignment, StatusBarItem, ThemeColor, window } from 'vscode';
 
-import { JobStatus, JobStatusEnum } from "../job";
-import { StatusBarTooltipCreator } from "./status-bar-tooltip-creator";
+import { JobStatus, JobStatusEnum } from '../job';
+import { StatusBarTooltipCreator } from './status-bar-tooltip-creator';
 
 export class StatusBar {
     private _statusBarItem!: StatusBarItem;
