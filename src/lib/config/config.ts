@@ -1,7 +1,8 @@
 export const CONFIG_PRIMARY_KEY = 'cimonitor';
 
 export enum ProviderType {
-    jenkins = 0
+    jenkins = 0,
+    teamCity = 1
 }
 
 export interface ProviderConfig {

@@ -1,24 +1,7 @@
 import { WorkspaceConfiguration } from "vscode";
-import { JobConfig } from "./config";
 
-export interface Job {
-    id: number;
-    key: string;
-    name?: string;
-    providerId: number;
-}
-
-export enum JobStatusEnum {
-    notInitialized,
-    success,
-    failure
-}
-
-export interface JobStatus {
-    status: JobStatusEnum;
-    projectUrl: string;
-    projectName: string;
-}
+import { JobConfig } from "../config";
+import { Job } from "./job";
 
 export class JobsCreator {
     public static create(config: WorkspaceConfiguration): Job[] {
