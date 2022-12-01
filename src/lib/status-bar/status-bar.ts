@@ -1,6 +1,6 @@
 import { MarkdownString, StatusBarAlignment, StatusBarItem, ThemeColor, window } from 'vscode';
 
-import { JobStatus, JobStatusEnum } from '../job';
+import { JobStatus, JobStatusResult } from '../job';
 import { StatusBarTooltipCreator } from './status-bar-tooltip-creator';
 
 export class StatusBar {
@@ -13,8 +13,8 @@ export class StatusBar {
         this._statusBarItem.show();
     }
 
-    private _getSuccessJobSStatuses(jobsStatuses: JobStatus[]): JobStatus[] {
-        return jobsStatuses.filter(jobsStatus => jobsStatus.status === JobStatusEnum.success);
+    private _getSuccessJobsStatuses(jobsStatuses: JobStatus[]): JobStatus[] {
+        return jobsStatuses.filter(jobsStatus => jobsStatus.result === JobStatusResult.success);
     }
 
     private _prepareToolTip(jobsStatuses: JobStatus[]): MarkdownString {
@@ -24,15 +24,15 @@ export class StatusBar {
 
     private _getSortedJobsStatusesByStatus(jobsStatuses: JobStatus[]): JobStatus[] {
         return jobsStatuses.sort((jobsStatus1, jobsStatuses2) => {
-            return jobsStatus1.status === jobsStatuses2.status
+            return jobsStatus1.result === jobsStatuses2.result
                 ? 0
-                : jobsStatus1.status !== JobStatusEnum.success ? -1 : 1;
+                : jobsStatus1.result !== JobStatusResult.success ? -1 : 1;
         });
     }
 
     private _getBackgroundColor(jobsStatuses: JobStatus[]): ThemeColor | undefined {
         let color;
-        const successJobSStatuses = this._getSuccessJobSStatuses(jobsStatuses);
+        const successJobSStatuses = this._getSuccessJobsStatuses(jobsStatuses);
         if (successJobSStatuses.length < jobsStatuses.length) {
             color = new ThemeColor('statusBarItem.warningBackground');
         }
@@ -53,7 +53,7 @@ export class StatusBar {
     }
 
     public actualizeStatusByJobsStatuses(jobsStatuses: JobStatus[]): void {
-        const successJobSStatuses = this._getSuccessJobSStatuses(jobsStatuses);
+        const successJobSStatuses = this._getSuccessJobsStatuses(jobsStatuses);
         this.setText(`${successJobSStatuses.length} successful of ${jobsStatuses.length}`);
         this._statusBarItem.tooltip = this._prepareToolTip(jobsStatuses);
         this._statusBarItem.backgroundColor = this._getBackgroundColor(jobsStatuses);

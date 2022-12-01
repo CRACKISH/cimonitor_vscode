@@ -5,14 +5,14 @@ export interface Job {
     providerId: number;
 }
 
-export enum JobStatusEnum {
+export enum JobStatusResult {
     notInitialized,
     success,
     failure
 }
 
 export interface JobStatus {
-    status: JobStatusEnum;
+    result: JobStatusResult;
     projectUrl: string;
     projectName: string;
 }

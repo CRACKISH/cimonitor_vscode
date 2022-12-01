@@ -1,6 +1,6 @@
 import { MarkdownString } from 'vscode';
 
-import { JobStatus, JobStatusEnum } from '../job';
+import { JobStatus, JobStatusResult } from '../job';
 
 export class StatusBarTooltipCreator {
 
@@ -13,14 +13,14 @@ export class StatusBarTooltipCreator {
 
     private _getItemIcon(jobsStatus: JobStatus): string {
         let color = '';
-        switch (jobsStatus.status) {
-            case JobStatusEnum.failure:
+        switch (jobsStatus.result) {
+            case JobStatusResult.failure:
                 color = 'notebook-state-error';
                 break;
-            case JobStatusEnum.notInitialized:
+            case JobStatusResult.notInitialized:
                 color = 'notebook-stop';
                 break;
-            case JobStatusEnum.success:
+            case JobStatusResult.success:
                 color = 'notebook-state-success';
                 break;
         }

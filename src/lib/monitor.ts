@@ -42,7 +42,7 @@ export class Monitor {
     private async getJobsStatuses(providers: Provider[], jobs: Job[]): Promise<JobStatus[]> {
         const jobsStatuses: JobStatus[] = [];
         await Promise.all(providers.map(async (provider) => {
-            const providerJobs = jobs.filter(job => job.providerId = provider.id);
+            const providerJobs = jobs.filter(job => job.providerId === provider.id);
             await Promise.all(providerJobs.map(async (providerJob) => {
                 const jobStatus = await provider.getJobStatus(providerJob);
                 jobsStatuses.push(jobStatus);

@@ -1,7 +1,8 @@
-import fetch, { HeadersInit } from 'node-fetch';
+import { HeadersInit, Response } from 'node-fetch';
 
-import { Job, JobStatus, JobStatusEnum } from '../job';
-import { BaseProvider } from './provider';
+import { Job, JobStatus, JobStatusResult } from '../job';
+import { addTrailingSlashToUrl } from '../utils';
+import { BaseHTTPProvider } from './provider';
 
 enum JenkinsJobResult {
     success = 'SUCCESS',
@@ -9,73 +10,34 @@ enum JenkinsJobResult {
     aborted = 'ABORTED'
 }
   
-interface JenkinsJobAction {
+interface JenkinsJobResponse {
     building: boolean;
     result: JenkinsJobResult;
 }
 
-export class JenkinsProvider extends BaseProvider {
-    private readonly _defaultRequestTimeout = 5000;
-
-    private _getJobProjectApiUrl(job: Job): string {
-        return `${this._getJobProjectUrl(job)}/lastBuild/api/json`;
+export class JenkinsProvider extends BaseHTTPProvider {
+    protected getJobProjectApiUrl(job: Job): string {
+        const projectUrl = addTrailingSlashToUrl(this.getJobProjectUrl(job));
+        return `${projectUrl}lastBuild/api/json`;
     }
 
-    private _getJobProjectUrl(job: Job): string {
-        return `${this.serviceUrl}/job/${job.key}/job/master/`;
+    protected getJobProjectUrl(job: Job): string {
+        const serviceUrl = addTrailingSlashToUrl(this.serviceUrl);
+        return `${serviceUrl}job/${job.key}/job/master/`;
     }
 
-    private _getRequestHeaders(): HeadersInit {
-        const buffer = Buffer.from(`${this.login}:${this.password}`);
-        return {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'Content-Type': 'application/json',
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            Authorization: 'Basic ' + buffer.toString('base64')
-        };
-    }
-
-    private _processJobStatus(jenkinsJob: JenkinsJobAction, jobStatus: JobStatus): JobStatus {
+    protected async processJobStatus(response: Response, jobStatus: JobStatus): Promise<JobStatus> {
+        const jenkinsJob = (await response.json()) as JenkinsJobResponse;
         if (jenkinsJob) {
             switch (jenkinsJob.result) {
                 case JenkinsJobResult.success:
-                jobStatus.status = JobStatusEnum.success;
+                jobStatus.result = JobStatusResult.success;
                 break;
                 case JenkinsJobResult.failure:
-                jobStatus.status = JobStatusEnum.failure;
+                jobStatus.result = JobStatusResult.failure;
                 break;
             }
         }
         return jobStatus;
-    }
-
-    private _createJobStatusResponse(job: Job): JobStatus {
-        const jobStatus = this._createDefaultJobStatusResponse();
-        jobStatus.projectUrl = this._getJobProjectUrl(job);
-        jobStatus.projectName = job.name || job.key;
-        return jobStatus;
-    }
-
-    private _createDefaultJobStatusResponse(): JobStatus {
-        return {
-            status: JobStatusEnum.notInitialized,
-            projectUrl: '',
-            projectName: ''
-        };
-    }
-    
-    public async getJobStatus(job: Job): Promise<JobStatus> {
-        const endPoint = this._getJobProjectApiUrl(job);
-        const jobStatus = this._createJobStatusResponse(job);
-        const response = await fetch(endPoint, {
-            method: 'GET',
-            headers: this._getRequestHeaders(),
-            timeout: this._defaultRequestTimeout
-        });
-        if (!response.ok) {
-            return jobStatus;
-        }
-        const jobAction = (await response.json()) as JenkinsJobAction;
-        return this._processJobStatus(jobAction, jobStatus);
     }
 }

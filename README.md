@@ -3,6 +3,7 @@
 ## Features
 
 Show status for your CI plans.
+Now supported Jenkins, TeamCity.
 
 ## Screenshots
 
